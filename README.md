@@ -1,3 +1,4 @@
-# hello_world
+# SQL-Practice
 database management, SQL, ORACLE
-Shannon here, is learning database management. Looking forward to more practice myself and good practise examples from others.
+
+lab practice of "database management" class
