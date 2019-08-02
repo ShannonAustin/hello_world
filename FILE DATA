@@ -1,0 +1,16 @@
+CREATE TABLE manufact
+  (manu_code      CHAR(4) CONSTRAINT manu_code_pk PRIMARY KEY,
+   manu_name      VARCHAR2(15))
+   
+   
+ INSERT INTO manufact
+  VALUES ('ANZZ','Anza');
+INSERT INTO manufact
+  VALUES ('HSKK','Husky');
+INSERT INTO manufact
+  VALUES ('HROO','Hero');
+INSERT INTO manufact
+  VALUES ('NRGG','Norge');
+INSERT INTO manufact
+  VALUES ('SMTT','Smith');
+
