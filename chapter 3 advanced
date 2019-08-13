@@ -1,0 +1,19 @@
+--1--
+alter table acctmanager
+ add(Comm_id number(2,0) default 10,
+     Ben_id number(2,0));
+     
+     
+--2--
+create table COMMRATE
+(Comm_id number(2,0),
+ Comm_rank varchar(15),
+ Rate number(3,2));
+ 
+ --3--
+create table BENEFITS
+(Ben_id number(2,0),
+ Ben_plan varchar(1),
+ Ben_provider number(3),
+ Active varchar(1),
+   CONSTRAINT BENIFIT_ACTIVE_ck CHECK (ACTIVE IN ('N', 'Y')));
