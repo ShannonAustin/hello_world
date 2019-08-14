@@ -1,3 +1,21 @@
+questions：
+1.Modify the following SQL command so that the Rep_ID column is the PRIMARY KEY for the table and the default value of Y is assigned to the Comm column. (The Comm column indicates whether the sales representative earns commission.)
+CREATE TABLE store_reps
+(rep_ID NUMBER (5),
+last VARCHAR2(15),
+first VARCHAR2(10),
+comm Char (1));
+2. Change the STORE_REPS table so that NULL values can't be entered in the name columns (First and Last).
+3. Change the STORE_REPS table so that only a Y or N can be entered in the Comm column.
+4. Add a column named Base_salary with a datatype of NUMBER(7,2) to the STORE_REPS table. Ensure that the amount entered is above zero.
+5. Create a table named BOOK_STORES to include the columns listed in the following chart.
+6. Add a constraint to make sure the Rep_ID value entered in the BOOK_STORES table is a valid value contained in the STORE_REPS table. The Rep_ID columns of both tables were initially created as different datatypes. Does this cause an error when adding the constraint? Make table modifications as needed so that you can add the required constraint.
+7. Change the constraint created in Assignment #6 so that associated rows of the BOOK_Stores table are deleted automatically if a row in the STORE_REPS table is deleted.
+8. Create a table named REP_CONTRACTS containing the columns listed in the following chart. A composite PRIMARY KEY constraint including the Rep_ID, Store_ID, and Quarter columns should be assigned. In addition, FOREIGN KEY constraints should be assigned to both the Rep_ID and Store_ID columns.
+9. Produce a list of information about all existing constraints on the STORE_REPS table.
+10. Issue the commands to disbale and then enable the CHECK constraint on the Bse_salary column.
+
+answers:
 --1--
 CREATE TABLE store_reps  
 (rep_ID NUMBER(5),  
@@ -22,7 +40,51 @@ ALTER TABLE store_reps
 ALTER TABLE store_reps  
  ADD (Base_salary number(7,2),
       constraint store_reps_Base_salary_ck check(Base_salary > 0));
-      
+ 
+ 
+--5--
+CREATE TABLE BOOK_STORES
+(Store_ID NUMBER(8),
+ FName VARCHAR2(30)  NOT NULL,
+ CONTACT VARCHAR2(30),
+ REP_ID VARCHAR2(5),
+ CONSTRAINT BOOK_STORES_STORE_ID_PK PRIMARY KEY(STORE_ID),
+ CONSTRAINT UC_NAME UNIQUE(Fname));
+
+
+--6--
+alter TABLE BOOK_STORES
+add( CONSTRAINT book_store_rep_ID_fk FOREIGN KEY(rep_ID )
+        REFERENCES STORE_REPS(REP_ID));
+
+Error report -
+ORA-02267: column type incompatible with referenced column type
+02267. 00000 -  "column type incompatible with referenced column type"
+*Cause:    The datatype of the referencing column is incompatible with the
+
+
+alter TABLE BOOK_STORES
+modify(REP_ID NUMBER(5));
+alter TABLE BOOK_STORES
+add( CONSTRAINT book_store_rep_ID_fk FOREIGN KEY(rep_ID )
+        REFERENCES STORE_REPS(REP_ID));
+
+
+--7--
+alter TABLE BOOK_STORES drop CONSTRAINT book_store_rep_ID_fk;
+alter TABLE BOOK_STORES
+add( CONSTRAINT book_store_rep_ID_fk FOREIGN KEY(rep_ID )
+        REFERENCES STORE_REPS(REP_ID)
+         ON DELETE CASCADE);
+
+
+
+
+
+
+
+
+
 
 
 
