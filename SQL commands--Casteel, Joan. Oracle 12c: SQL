@@ -1,0 +1,202 @@
+--Ch2: Basic SQL select Statement
+--list of exist tables
+select table_name
+ from user_tables;
+
+
+--list the structure of the BOOKS table
+DESC books;
+
+--using a column alias 
+select title as "title of books", category
+ from books;
+
+--using a column alias without the AS keyword
+select title, retail price
+ from books;
+ 
+--using a column alias for a arithmetic expression
+select title retail-cost profit
+ from books;
+ 
+--list of unduplicated states for customers
+select distinct state
+ from custermers;
+select unique state
+ from customers;
+
+--using a column alias for xoncatenated values
+select firstname||' '||lastname "customer name"
+ from customers;
+
+
+
+
+--Ch3: Table Creation and Management
+--the creation of ACCTMANAGER table
+CREATE TABLE acctmanager
+(amid VARCHAR2(4) PRIMARY KEY,
+ amfirst VARCHAR2(12)  NOT NULL,
+ amlast VARCHAR2(12)  NOT NULL,
+ amedate DATE DEFAULT SYSDATE,
+ amsal NUMBER(8,2),
+ amcomm NUMBER(7,2) DEFAULT 0,
+ amearn AS (amsal + amcomm),
+ region CHAR(2) NOT NULL);
+
+--verify DEFAULT and virtual column settings
+select column_name, data_type, data_default
+ from user_tab_columns
+ where table_name = 'ACCTMANAGER';
+ 
+--define an invisible column
+create table test_INVIS
+  (col1 char(1),
+   col2 number(4) invisible);
+
+--an invisible column directly referenced is retrieved
+select col1, col2
+ from test_invis;
+
+--use the data dictionary to identify invisible columns
+select column_name, hidden_column
+ from user_tab_cols
+ where table_name = 'TEST_INVIS'
+ 
+ 
+--creating a table besed on a subquery
+create table cust_mkt
+ as (select customer#, city, state, zip, regerred, region
+       from customers);
+
+--add(drop) column
+alter table punlisher
+  add (EXT NUMBER(4));
+alter table punlisher
+ drop column ext;
+
+--modify column
+--COLUMN TO BE MODIFIED  MUST BE EMPTY TO DECREASE PRECISION OR SCALE
+--the default value changing only affact the value assigned to future rows inserted into the table
+alter table books
+ modify (retail NUMBER(5,1));
+alter table publisher
+ modify (rating default 'N');
+
+
+--set/drop unused column
+alter table cust_mkt
+ set unused (state);
+or
+alter table cust_mkt
+ set unused column state;
+alter table cust_mkt
+ drop unused columns;
+
+--list tables with columns marked as unused
+select *
+ from user_unused_col_tabs;
+
+--rename a table
+rename cust_mkt to cust_mkt_092009;
+
+--truncating a table -delete all rows and gree up the storage space
+truncate table cust_mkt_092009;
+
+--delete table/FLASHBACK
+DROP TABLE cust_mkt_092009;
+SELECT OBJECT_NAME, ORIGINAL_NAME
+ FROM RECYCLEBIN;
+
+FLASHBACK TABLE cust_mkt_092009
+ TO BEFORE DROP;
+
+--DROP WITH A PURGE OPTION
+DROP TABLE cust_mkt_092009 PURGE;
+
+
+
+--CH4: CONSTRAINTS
+--ADD A PRIMARY KEY CONSTRAINT
+ALTER TABLE CUSTOMERS
+ ADD CONSTRAINT CUSTOMERS_CUSTOMER#_PK PRIMARY KEY(CUSTOMER#);
+
+--FOREIGN KEY CONSTRAINT
+--ADD KEY WORD "OM DELETE CASCADE" THEN IF a record is deleted from the  parent table, any corresponding records in the child table are also deleted 
+ALTER TABLE ORDERS 
+ ADD CONSTRAINT ORDERS_CUSTOMER#_FK FOREIGN KEY (CUSTOMER#)
+       REFERENCES CUSTOMERS (CUSTOMER#);
+ALTER TABLE ORDERS 
+ ADD CONSTRAINT ORDERS_CUSTOMER#_FK FOREIGN KEY (CUSTOMER#)
+       REFERENCES CUSTOMERS (CUSTOMER#) ON DELETE CASCADE;
+
+--DROP the parent table with the CASCADE CONSTRAINTS option, 
+--This option deletes the FOREIGN KEY constraint in the child  table SO YOU CAN delete the parent table WITHOUT GET ERROR CAUSED BY A FOREIGN KEY. 
+DROP TABLE CUSTOMERS
+ CASCADE CONSTRAINTS;
+
+--UNIQUE CONSTRAINT
+ALTER TABLE BOOKS
+ ADD CONSTRAINT BOOKS_TITLE_UK UNIQUE (TITLE);
+ 
+--CHECK CONSTRAINT
+ALTER TABLE ORDERS
+ ADD CONSTRAINT ORDERS_SHIPDATE_CK CHECK (ORDERDATE<=SHIPDATE);
+ 
+ --ADDING A NOT NULL CONSTRAINT
+ ALTER TABLE ORDERS
+  MODIFY (CUSTOMER# CONSTRAINT ORDERS_CUSTOMER#_NN NOT NULL);
+ ALTER TABLE ORDERS
+  MODIFY (CUSTOMER# NOT NULL);
+  
+--INCLUDING CONSTRAINTS DURING TABLE CREATION
+--CONSTRAINTS DEFINED AT THE TABLE LEVEL
+CREATE TABLE ORDERITEMS 
+     ( Order# NUMBER(4),
+       Item# NUMBER(2),
+       ISBN VARCHAR2(10),
+       Quantity NUMBER(3), 
+       PaidEach NUMBER(5,2),
+       CONSTRAINT orderitems_pk PRIMARY KEY (order#, item#),
+       CONSTRAINT orderitems_order#_fk FOREIGN KEY (order#)
+             REFERENCES orders (order#) ,
+       CONSTRAINT orderitems_isbn_fk FOREIGN KEY (isbn)
+             REFERENCES books (isbn) ,
+       CONSTRAINT oderitems_quantity_ck CHECK (quantity > 0) );
+
+--CONSTRAINTS DEFINED AT THE COLUMN LEVEL
+--constraints with no names assigned may complicates interpretin error messages
+create table dept
+ (deptid NUMBER(2) CONSTRAINT DEPT_DEPTID_PK PRIMARY KEY,
+  DNAME VARCHAR2(20) NOT NULL
+                     CONSTRAINT DEPT_DNAME_UK UNIQUE,
+  FAX VARCHAR2(12));
+or
+CREATE TABLE DEPT 
+ (deptid NUMBER(2) PRIMARY KEY,
+  DNAME VARCHAR2(20) NOT NULL UNIQUE,
+  FAX VARCHAR2(12));
+  
+--VIEWING CONSTRAINT INFORMATION
+SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE, SEARCH_CONDITION, R_CONSTRAINT_NAME
+ FROM USER_CONSTRAINTS
+ WHERE TABLE_NAME = 'EQUIP';
+ 
+--VIEWING LISTS COLUMN NAMES AND ASSIGNED CONSTRAINTS
+SELECT CONSTRAINT_NAME, COLUMN_NAME
+ FROM USER_CONS_COLUMNS
+ WHERE TABLE_NAME = 'EQUIP';
+ 
+--DISABLE AND ENABLE CONSTRAINTS
+ALTER TABLE EQUIP
+ DISABLE CONSTRAINT EQUIP_RATING_CK;
+
+ALTER TABLE EQUIP
+ ENABLE CONSTRAINT EQUIP_RATING_CK;
+ 
+--DROP CONSTRAINTS
+ALTER TABLE EQUIP
+ DROP CONSTRAINT EQUIP_RATING_CK;
+ 
+ALTER TABLE CUSTOMERS
+ DROP PRIMARY KEY CASCADE;
