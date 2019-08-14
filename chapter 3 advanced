@@ -1,0 +1,33 @@
+questions:
+The management of JustLee Books has approved implementing a new commission policy and  benefits plan for the account managers. The following changes need to be made to the existing  database:  
+• Two new columns must be added to the ACCTMANAGER table: one to indicate  the commission classification assigned to each employee and another to  contain each employee’s benefits code. The commission classification column  should be able to store integers up to a maximum value of 99 and be named  Comm_id. The value of the Comm_id column should be set to a value of 10  automatically if no value is provided when a row is added. The benefits code  column should also accommodate integer values up to a maximum of 99 and  be named Ben_id. 
+• A new table, COMMRATE, must be created to store the commission rate schedule  and must contain the following columns:  
+ • Comm_id: A numeric column similar to the one added to the  ACCTMANAGER table  
+ • Comm_rank: A character field that can store a rank name allowing up to 15  characters  
+ • Rate: A numeric field that can store two decimal digits (such as .01 or .03)  
+• A new table, BENEFITS, must be created to store the available benefit plan  options and must contain the following columns:  
+ • Ben_id: A numeric column similar to the one added to the ACCTMANAGER table  
+ • Ben_plan: A character field that can store a single character value  
+ • Ben_provider: A numeric field that can store a three-digit integer  
+ • Active: A character field that can hold a value of Y or N  Required: Create the SQL statements to address the changes needed to support the new  commission and benefits data. 
+ 
+answers:
+--1--
+alter table acctmanager
+ add(Comm_id number(2,0) default 10,
+     Ben_id number(2,0));
+     
+     
+--2--
+create table COMMRATE
+(Comm_id number(2,0),
+ Comm_rank varchar(15),
+ Rate number(3,2));
+ 
+ --3--
+create table BENEFITS
+(Ben_id number(2,0),
+ Ben_plan varchar(1),
+ Ben_provider number(3),
+ Active varchar(1),
+   CONSTRAINT BENIFIT_ACTIVE_ck CHECK (ACTIVE IN ('N', 'Y')));

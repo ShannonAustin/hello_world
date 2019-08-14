@@ -364,6 +364,7 @@ region CHAR(2),
      CONSTRAINT acctmanager2_amid_pk PRIMARY KEY (amid),
      CONSTRAINT acctmanager2_region_ck
                 CHECK (region IN ('N', 'NW', 'NE', 'S', 'SE', 'SW', 'W', 'E')));
+                                  
 
  
  
