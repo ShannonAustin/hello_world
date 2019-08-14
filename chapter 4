@@ -13,7 +13,7 @@ comm Char (1));
 7. Change the constraint created in Assignment #6 so that associated rows of the BOOK_Stores table are deleted automatically if a row in the STORE_REPS table is deleted.
 8. Create a table named REP_CONTRACTS containing the columns listed in the following chart. A composite PRIMARY KEY constraint including the Rep_ID, Store_ID, and Quarter columns should be assigned. In addition, FOREIGN KEY constraints should be assigned to both the Rep_ID and Store_ID columns.
 9. Produce a list of information about all existing constraints on the STORE_REPS table.
-10. Issue the commands to disbale and then enable the CHECK constraint on the Bse_salary column.
+10. Issue the commands to disable and then enable the CHECK constraint on the Base_salary column.
 
 answers:
 --1--
@@ -78,12 +78,27 @@ add( CONSTRAINT book_store_rep_ID_fk FOREIGN KEY(rep_ID )
          ON DELETE CASCADE);
 
 
+--8--
+CREATE TABLE REP_CONTRACTS
+(STORE_ID NUMBER(8),
+ FNAME NUMBER(5),
+ QUARTER CHAR(3),
+ REP_ID NUMBER(5),
+ CONSTRAINT REP_CONTRACTS_PK PRIMARY KEY(REP_ID, STORE_ID, QUARTER),
+ CONSTRAINT REP_CONTRACTS_REP_ID_FK FOREIGN KEY(REP_ID) REFERENCES STORE_REPS(REP_ID），
+ CONSTRAINT REP_CONTRACTS_STORE_ID_FK FOREIGN KEY(STORE_ID) REFERENCES BOOK_STORES(STORE_ID));
 
 
+--9--
+select constraint_name, constraint_type, search_condition, r_constraint_name
+ from user_constraints
+ where table_name='STORE_REPS';
 
-
-
-
+--10--
+ALTER TABLE store_reps  
+disable constraint store_reps_Base_salary_ck;
+ALTER TABLE store_reps  
+enable constraint store_reps_Base_salary_ck;
 
 
 
