@@ -190,13 +190,24 @@ SELECT CONSTRAINT_NAME, COLUMN_NAME
 --DISABLE AND ENABLE CONSTRAINTS
 ALTER TABLE EQUIP
  DISABLE CONSTRAINT EQUIP_RATING_CK;
-
 ALTER TABLE EQUIP
  ENABLE CONSTRAINT EQUIP_RATING_CK;
  
 --DROP CONSTRAINTS
 ALTER TABLE EQUIP
- DROP CONSTRAINT EQUIP_RATING_CK;
- 
+ DROP CONSTRAINT EQUIP_RATING_CK; 
 ALTER TABLE CUSTOMERS
  DROP PRIMARY KEY CASCADE;
+ --you will get an error "this promary key is referenced by some foreign keys" if you don't put 'cascade' in your command
+
+
+
+--CHAPTER 5
+--Use the insert command
+INSERT INTO acctmanager
+ VALUES ('T500', 'NICK','TAYLOR', '05-SEP-09', 42000, 3500, 'NE');
+INSERT INTO acctmanager
+ VALUES ('L500', 'MANDY','LOPEZ', '01-OCT-09', 47000, 1500, NULL);
+INSERT INTO acctmanager (amid, amfirst, amlast, amedate, amsal, amcomm, region)
+ VALUES ('J500', 'SAMMIE','JONES', SYSDATE, 39500, 2000, 'NW');
+  
