@@ -32,6 +32,7 @@ select firstname||' '||lastname "customer name"
 
 
 
+
 --Ch3: Table Creation and Management
 --the creation of ACCTMANAGER table
 CREATE TABLE acctmanager
@@ -113,6 +114,10 @@ FLASHBACK TABLE cust_mkt_092009
 
 --DROP WITH A PURGE OPTION
 DROP TABLE cust_mkt_092009 PURGE;
+
+
+
+
 
 
 
@@ -202,8 +207,14 @@ ALTER TABLE CUSTOMERS
 
 
 
+
+
+
+
+
+
 --CHAPTER 5
---Use the insert command
+--INSERTING NEW ROWS
 INSERT INTO acctmanager
  VALUES ('T500', 'NICK','TAYLOR', '05-SEP-09', 42000, 3500, 'NE');
 INSERT INTO acctmanager
@@ -211,3 +222,68 @@ INSERT INTO acctmanager
 INSERT INTO acctmanager (amid, amfirst, amlast, amedate, amsal, amcomm, region)
  VALUES ('J500', 'SAMMIE','JONES', SYSDATE, 39500, 2000, 'NW');
   
+INSERT INTO acctbomus (amid, amsal, region)
+ SELECT amid, amsal, region
+  FROM acctmanager;
+  
+--DEFAULT COLUMN OPTION
+INSERT TABLE acctmanager
+ MODIFY (amsal DEFAULT ON NULL 0)
+
+SELECT table_name, column_name, data_default, default_on_null
+  FROM user_tab_columns
+  WHERE table_name - 'ACCTMANAGER';
+
+--handling virtual columns
+ALTER TABLE acctmanager
+  ADD (amearn AS (amsal + amcomm));
+ --if you want to insert o'hara, use'o''hara'
+
+--MODIFYING EXISTING ROWS
+UPDATE acctmanager
+  SET amedate = '01-AUG-09'
+  WHERE amid = 'j500';
+UPDATE acctmanager
+  SET region = 'W'
+  WHERE region IN('NE','NW');
+UPDATE customers
+  SET region = '';
+UPDATE customers
+  SET region = 'W'
+  WHERE state = 'CA';
+UPDATE customers
+  SET region = '&Region'
+  WHERE state = '&State';
+DELETE FROM acctmanager
+  WHERE amid = 'J500';
+DELETE FROM acctmanager;--DELETE ALL ROWS
+
+--COMMIT AND ROLLBACK COMMANDS
+UPDATE acctmanager
+ SET region = 'E'
+ WHERE amid = 'M500';
+COMMIT;
+UPDATE acctmanager
+ SET region = 'E'
+ WHERE amid = 'T500';
+UPDATE acctmanager
+ SET region = 'E'
+ WHERE amid = 'L500'; 
+SAVEPOINT ONE;
+UPDATE acctmanager
+ SET AMCOMM = 6600
+ WHERE amid = 'T500'; 
+ROLLBACK TO ONE;
+
+ROLLBACK;--UNDO ALL PENDING CHANGES
+
+--USING TABLE LOCKS
+LOCK TABLE tablename IN SHARE MODE;
+LOCK TABLE tablename IN EXCLUSIVE MODE;
+  --LOCKS ARE RELEASED AUTOMATICALLY IF THE USER ISSUES A TRANSACTION CONTROL STATEMENT, 
+    --SUCH AS ROLLBACK OR COMMIT, OR EXITS THE SYSTEM
+SELECT columnnames,...
+FROM tablename,...
+[WHERE condition]
+FOR UPDATE;  --THIS COMMAND PLACES A SHARED LOCK ON THE RECORD TO BE CHANGED.
+               --a COMMIT or ROLLBACK command must still be issued, or the selected rows remain locked.
