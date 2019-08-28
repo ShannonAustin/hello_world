@@ -287,3 +287,44 @@ FROM tablename,...
 [WHERE condition]
 FOR UPDATE;  --THIS COMMAND PLACES A SHARED LOCK ON THE RECORD TO BE CHANGED.
                --a COMMIT or ROLLBACK command must still be issued, or the selected rows remain locked.
+               
+               
+               
+
+
+
+
+
+
+--CHAPTER 6
+--SEQUENCE
+CREATE SEQUENCE orders_order#_seq
+  INCREMENT BY 1
+  START WITH 1021
+  NOCACHE
+  NOCYCLE;
+SELECT object_name
+  FROM user_objects
+  WHERE object_type = 'SEQUENCE';
+INSERT INTO orders (order#, customer#, orderdate, shipdate, shipstreet,
+                    shipcity, shipstate, shipzip)
+  VALUES (orders_order#_seq.NEXTVAL, 1010, '06-APR-09', NULL, '123 WEST MAIN', 
+           'ATLANTA', 'GA',30418); --插入数据时可以利用sequence的值
+                                   --orders_order#_seq.NEXTVAL下一个值
+                                   --orders_order#_seq.CURRVAL目前值
+
+
+
+--SETTING AND ALTERING SEQUENCE DEFINITIONS
+CREATE SEQUENCE test_defval_seq
+  INCREMENT BY 1
+  START WITH 100
+  NOCACHE
+  NOCYCLE;
+
+CREATE TABLE test_defval
+  (col1 NUMBER DEFAULT test_defval_seq.NEXTVAL,
+   col2 NUMBER);
+   
+ALTER SEQUENCE orders_order#_seq
+  INCREMENT BY 10';
