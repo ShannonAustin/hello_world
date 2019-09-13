@@ -328,3 +328,185 @@ CREATE TABLE test_defval
    
 ALTER SEQUENCE orders_order#_seq
   INCREMENT BY 10';
+
+SELECT SYSDATE
+  FROM DUAL;  --USING THE DUAL TABLE
+SELECT orders_order#_seq.NEXTVAL
+  FROM DUAL;
+SELECT orders_order#_seq.NEXTVAL
+  FROM DUAL;
+SELECT orders_order#_seq.CURRVAL
+  FROM DUAL;
+
+DROP SEQUENCE orders_order#_seq;
+
+--use "GENERATED AS IDENTITY"
+CREAT TABLE test_ident
+  (coll NUMBER GENERATED AS IDENTITY PRIMARY KEY,
+   col2 NUMBER);
+   
+   
+---INDEX
+--creating an index on the ZIP column
+CREATE INDEX customer_zip_idx
+ ON customers (zip);
+
+--EXPLICITLY CREATING A UNIQUE INDEX
+CREATE UNIQUE INDEX books_title_idx
+ ON books (title);
+
+--INDICATING A DESCENDING SORT FOR INDEX VALUES
+CREATE INDEX customers_zip_desc_idx
+ ON customers (zip DESC);
+
+--CREATING A COMPOSITE INDEX
+CREATE INDEX customer_name_idx
+ ON customers (lastname, firstname);
+
+--CREATING A BITMAP INDEX ON THE REGION COLUMN
+CREATE BITMAP INDEX customeres_region_idx
+ ON customers (regions);
+ 
+--CREATE A FUNCTION-BASED INDEX
+CREATE INDEX books_profit_idx
+ ON books (retail-cost);
+
+--CREATING A FUNCTION-BASED INDEX for NULL values
+CREATE INDEX orders_shipdate_idx
+ ON orders (NVL(shipdate,'null'));
+ 
+--CREATE AN IOT(INDEX ORGANIZED TABLE) FOR THE BOOKS TABLE
+CREATE TABLE books2
+(ISBN ...,
+ TITLE ...,
+ ...
+ ...
+   CONSTRAINT ...)
+ORGANIZATION INDEX;
+
+--IDENTIFY INDEXES ON THE CUSTOMERS TABLE
+SELECT table_name, index_name, index_type
+ FROM user_indexs
+ WHERE table_name = 'CUSTOMERS';
+
+--MORE INDEX DETAILS FROM USER_IND_COLUMNS
+SELECT table_name, index_name, column_name
+ FROM user_ind_columns
+ WHERE table_name = 'CUSTOMERS';
+ 
+--RENAME AN INDEX
+ALTER INDEX books_[profit_idx
+ RENAME TO books_profitcalc_idx;
+ 
+DROP INDEX indexname;
+
+---SYNONYMS
+CREATE SUNONYM orderentry
+ FOR orders;
+CREATE PUBLIC SYNONYM orderentry
+ FOR orders;
+
+DROP SYNONYM orderentry;
+
+
+
+
+
+---CHAPTER 7
+---DATA SECURITY
+--COMMAND TO CREATE AB ACCOUNT FOR A NEW EMPLOYEE
+CREATE USER rthomas
+ IDENTIFIED BY little25car
+ PASSWORD EXPIRE;
+ 
+--GRANT SYSTEM PRIVILEGES
+GRANT CREATE SESSION
+ TO rthomas;
+
+GRANT select, insert
+ ON scott.customers
+ TO rthomas;
+
+GRANT select, 
+      update(lastname, firstname)
+ ON scott.customers
+ TO rthomas;
+
+GRANT ALL
+ ON scott.customers
+ TO rthomas
+ WITH GRANT OPTION;--WITH GRANT OPTION APPLIES ONLY TO USERS, CAN'T BE USED TO ROLES
+
+
+--COMMANDS FOR RESETTING A PASSWORD
+ALTER USER rthomas
+ IDENTIFIED by rxy22b
+ PASSWORD EXPIRE;
+---COMMAND TO CHANGE A PASSWORD
+ALTER USER rthomas
+ IDENTIFIED by abc456
+ 
+ 
+---USING ROLES
+CREATE ROLE orderentry;
+
+GRANT SELECT, INSERT, UPDATE
+ ON scott.orders
+ TO orderentry;
+GRANT SELECT, INSERT, UPDATE
+ ON scott.customers
+ TO orderentry;
+GRANT SELECT, INSERT, UPDATE
+ ON scott.orderitems
+ TO orderentry;
+ 
+ GRANT orderentry
+  TO rthomas;
+
+CREATE ROLE supervisor;
+GRANT orderentry, billing
+ TO supervisor;
+
+ALTER USER rthomas
+ DEFAULT ROLE orderentry;
+ALTER USER sdavis
+ DEFAULT ROLE ALL;
+ALTER USER sdavis
+ DEFAULT ROLE 
+ ALL EXCEPT mod tables;
+ 
+ 
+ SET ROLE rolename;
+ ALTER ROLE rolename
+  IDENTIFIED BY password;
+  
+--verifying privileges assigned to a role
+SELECT *
+ FROM role_tab_privs
+ WHERE role = 'ORDERENTRY'
+ ORDER BY table_name;
+ 
+--verifying active system privileges and roles
+SELECT *
+ FROM user_sys_privs;
+SELECT *
+ FROM user_role_privs; 
+
+--removing an object privilege from a role
+REVOKE delete
+ ON customers
+ FROM orderentry;
+ 
+--removing a role from a user account
+REVOKE orderentry
+FROM rthomas;
+
+--drop a role
+DROP ROLE orderentry;
+
+--drop a user
+DROP USER rthomas;
+
+
+
+
